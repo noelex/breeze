@@ -1,0 +1,16 @@
+name: breeze
+description: "A new Flutter package project."
+version: 0.0.1
+homepage:
+
+environment:
+  sdk: '>=3.4.4 <4.0.0'
+
+dependencies:
+
+dev_dependencies:
+  test: ^1.25.8
+  lints: ^4.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec

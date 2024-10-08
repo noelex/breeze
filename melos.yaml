@@ -1,0 +1,5 @@
+name: breeze
+
+packages:
+  - packages/breeze
+  - packages/breeze_flutter
