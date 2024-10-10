@@ -7,6 +7,22 @@ abstract class Disposable {
   void dispose();
 }
 
+/// A [Disposable] which invokes the specified callback when [dispose] is called.
+class DelegateDisposable implements Disposable {
+  final void Function() _disposeAction;
+  bool _disposed = false;
+
+  DelegateDisposable(this._disposeAction);
+
+  @override
+  void dispose() {
+    if (!_disposed) {
+      _disposed = true;
+      _disposeAction();
+    }
+  }
+}
+
 /// Defines a mechanism for retrieving a service object.
 abstract class ServiceProvider {
   /// Gets the service object of the specified type.
@@ -203,7 +219,7 @@ class DefaultServiceProvider
       if (descriptor.lifetime == ServiceLifetime.singleton ||
           descriptor.lifetime == ServiceLifetime.transient) {
         // Singleton and transient services are handled by the root provider.
-        // We just need to get the accessor in the root provider by using the index of the ServiceDescriptor. 
+        // We just need to get the accessor in the root provider by using the index of the ServiceDescriptor.
         _services.add(_ServiceEntry(
             id,
             descriptor.type,

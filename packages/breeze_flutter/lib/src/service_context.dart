@@ -78,6 +78,63 @@ class _RootSlot extends InheritedWidget {
   }
 }
 
+/// Represents the context associated with a service resolution request initiated using [With] and its variants.
+class ResolutionContext extends InheritedWidget {
+  /// Gets the [ServiceProvider] for resolving service objects.
+  final ServiceProvider serviceProvider;
+
+  final List<Disposable> _disposables = [];
+
+  ResolutionContext(
+      {super.key, required this.serviceProvider, required super.child});
+
+  @override
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) {
+    return false;
+  }
+
+  /// Register a [Disposable] which will be disposed when the [ResolutionContext] is detached from the widget tree.
+  void addDisposable(Disposable disposable) {
+    _disposables.add(disposable);
+  }
+
+  /// Register a callback which will be called when the [ResolutionContext] is detached from the widget tree.
+  void onDispose(void Function() action){
+    addDisposable(DelegateDisposable(action));
+  }
+
+  /// Retrieves the nearest [ResolutionContext] from specified [BuildContext].
+  static ResolutionContext? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<ResolutionContext>();
+  }
+
+  /// Retrieves the nearest [ResolutionContext] from specified [BuildContext].
+  static ResolutionContext of(BuildContext context) {
+    final ctx = maybeOf(context);
+    assert(ctx != null);
+    return ctx!;
+  }
+
+  @override
+  InheritedElement createElement() {
+    return _ResolutionContextElement(this, _disposables);
+  }
+}
+
+class _ResolutionContextElement extends InheritedElement {
+  final List<Disposable> _attachedDisposables;
+
+  _ResolutionContextElement(super.widget, this._attachedDisposables);
+
+  @override
+  void unmount() {
+    for (var element in _attachedDisposables) {
+      element.dispose();
+    }
+    super.unmount();
+  }
+}
+
 class _ServiceScopeSlot extends InheritedWidget {
   final ServiceScope scope;
   const _ServiceScopeSlot({required this.scope, required super.child});
@@ -110,8 +167,13 @@ class With<TService> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sp = _ServiceScopeSlot.of(context);
-    return builder(
-        context, sp.scope.serviceProvider.getRequiredService(), child);
+    return ResolutionContext(
+      serviceProvider: sp.scope.serviceProvider,
+      child: Builder(
+        builder: (ctx) =>
+            builder(ctx, sp.scope.serviceProvider.getRequiredService(), child),
+      ),
+    );
   }
 }
 
@@ -131,11 +193,17 @@ class With2<T1, T2> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sp = _ServiceScopeSlot.of(context);
-    return builder(
-      context,
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      child,
+    return ResolutionContext(
+      serviceProvider: sp.scope.serviceProvider,
+      child: Builder(
+        builder: (ctx) =>
+            builder(
+              ctx,
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              child,
+            ),
+      ),
     );
   }
 }
@@ -156,12 +224,18 @@ class With3<T1, T2, T3> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sp = _ServiceScopeSlot.of(context);
-    return builder(
-      context,
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      child,
+    return ResolutionContext(
+      serviceProvider: sp.scope.serviceProvider,
+      child: Builder(
+        builder: (ctx) =>
+            builder(
+              ctx,
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              child,
+            ),
+      ),
     );
   }
 }
@@ -174,13 +248,19 @@ class With4<T1, T2, T3, T4> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sp = _ServiceScopeSlot.of(context);
-    return builder(
-      context,
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      child,
+    return ResolutionContext(
+      serviceProvider: sp.scope.serviceProvider,
+      child: Builder(
+        builder: (ctx) =>
+            builder(
+              ctx,
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              child,
+            ),
+      ),
     );
   }
 }
@@ -193,14 +273,20 @@ class With5<T1, T2, T3, T4, T5> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sp = _ServiceScopeSlot.of(context);
-    return builder(
-      context,
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      child,
+    return ResolutionContext(
+      serviceProvider: sp.scope.serviceProvider,
+      child: Builder(
+        builder: (ctx) =>
+            builder(
+              ctx,
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              child,
+            ),
+      ),
     );
   }
 }
@@ -213,15 +299,21 @@ class With6<T1, T2, T3, T4, T5, T6> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sp = _ServiceScopeSlot.of(context);
-    return builder(
-      context,
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      child,
+    return ResolutionContext(
+      serviceProvider: sp.scope.serviceProvider,
+      child: Builder(
+        builder: (ctx) =>
+            builder(
+              ctx,
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              child,
+            ),
+      ),
     );
   }
 }
@@ -235,16 +327,22 @@ class With7<T1, T2, T3, T4, T5, T6, T7> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sp = _ServiceScopeSlot.of(context);
-    return builder(
-      context,
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      child,
+    return ResolutionContext(
+      serviceProvider: sp.scope.serviceProvider,
+      child: Builder(
+        builder: (ctx) =>
+            builder(
+              ctx,
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              child,
+            ),
+      ),
     );
   }
 }
@@ -258,17 +356,23 @@ class With8<T1, T2, T3, T4, T5, T6, T7, T8> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sp = _ServiceScopeSlot.of(context);
-    return builder(
-      context,
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      child,
+    return ResolutionContext(
+      serviceProvider: sp.scope.serviceProvider,
+      child: Builder(
+        builder: (ctx) =>
+            builder(
+              ctx,
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              child,
+            ),
+      ),
     );
   }
 }
@@ -282,18 +386,24 @@ class With9<T1, T2, T3, T4, T5, T6, T7, T8, T9> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sp = _ServiceScopeSlot.of(context);
-    return builder(
-      context,
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      child,
+    return ResolutionContext(
+      serviceProvider: sp.scope.serviceProvider,
+      child: Builder(
+        builder: (ctx) =>
+            builder(
+              ctx,
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              child,
+            ),
+      ),
     );
   }
 }
@@ -307,19 +417,25 @@ class With10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sp = _ServiceScopeSlot.of(context);
-    return builder(
-      context,
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      sp.scope.serviceProvider.getRequiredService(),
-      child,
+    return ResolutionContext(
+      serviceProvider: sp.scope.serviceProvider,
+      child: Builder(
+        builder: (ctx) =>
+            builder(
+              ctx,
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              sp.scope.serviceProvider.getRequiredService(),
+              child,
+            ),
+      ),
     );
   }
 }
